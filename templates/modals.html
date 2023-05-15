@@ -1,0 +1,130 @@
+
+
+{% block ordermodal %}
+<!--Modal on clicking PLACE ORDER button-->
+<div  class="modal fade" id="equipModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+             ×
+             </button>
+             <h4 class="modal-title">
+             Ordering Details
+             </h4>
+          </div>
+          <div class="modal-body">
+            <!--Modal Body-->
+                <div class="container-fluid">
+                   <div class="row" >
+                      <div class="col-md-4">
+                         <div class= "form-group">
+                            <label class="control-label"><strong>Required Quantity/Length:</strong></label>
+                            <input type="number" min="1" max="10000000" id="requiredLength" class="form-control">
+                         </div>
+                      </div>
+                      <div class="col-md-4">
+                         <div class= "form-group">
+                            <label class="control-label"><strong>Date When Required:</strong></label>
+                            <input type="datetime-local" id="dateWhenRequired" class="form-control" >
+                         </div>
+                      </div>
+                   
+                   
+                   <!--Dropdown-->
+                   
+                      <div class="col-md-4">
+                         <div class="form-group">
+                         <label class="control-label"><strong>City/Project:</strong></label>
+                            <select id="orderCity" class="form-control search-select" ></select>
+                         </div>
+                      
+                      </div>
+                   </div>
+                   <div class="row">
+                      <div class="col-md-offset-5 col-sm-1">
+                         <button class="btn btn-primary" type="submit" id="submit_btn" name="done" onclick="submitCon();">Submit</button>
+                      </div>
+                   </div>  
+
+                </div>
+
+          </div>
+      </div>
+   </div>
+</div>  
+
+<script>
+function showOrderModal(materialId)
+    {
+      // alert($matId);
+    
+    $('#requiredLength').val('');
+    $('#dateWhenRequired').val('');
+    $('#orderCity').val('');
+      matId=materialId;
+       $('#equipModal').modal('toggle');
+    }
+
+    function submitCon()
+{
+   var requiredLength = $("#requiredLength").val();  
+    var dateRequired= $("#dateWhenRequired").val();
+    var city= document.getElementById('orderCity').value;
+   //var ProcuredQuantity=$("#ProcuredQuantity").val();
+
+   if( $.trim(requiredLength) == '' || $.trim(requiredLength) == null || $.trim(dateRequired) == '' || $.trim(dateRequired) == null || $.trim(city) == '' || $.trim(city) == null)
+   {
+      toastr.warning('Please fill all the fields.');
+      return;
+   }
+   if($.trim(requiredLength) <1 || $.trim(requiredLength) > 10000000)
+   {
+      toastr.warning('Invalid required length!');
+      return;
+   }
+
+   $('#submitConfirmation').modal('toggle');
+
+}
+
+//PlaceOrder Functionality
+
+//ajax call for insertion in PLACEORDER table
+function PlaceOrder()
+{
+  $('#submitConfirmation').modal('toggle');
+   var requiredLength = $("#requiredLength").val();  
+    var dateWhenRequired= $("#dateWhenRequired").val();
+    var city= $("#orderCity").val();
+    var operator = '<?php echo $operator ?>'; 
+    $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:8000/equipment/placeorder",
+            dataType: "json",
+            data:
+            {
+                material_id:matId,
+                required_length:requiredLength,
+                date_required:dateWhenRequired,
+                city:city,
+            },
+            success: function(data)
+            {
+               $('#equipModal').modal('toggle');
+               if(data == 'success')
+               {
+                alert('Order Placed Successfully!'); 
+               }
+                
+                else
+                {
+                   alert('Request Failed!'); 
+                }
+               
+            }
+          });
+ 
+}
+</script>
+{% endblock ordermodal %}

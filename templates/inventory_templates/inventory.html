@@ -1,0 +1,282 @@
+
+{% extends 'header.html' %}
+
+{% block body %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
+{% block title %}
+<title>Inventory</title>
+{% endblock title %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <div class="card card-dark">
+        <div class="card-header">
+          <h3 class="card-title">Inventory</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="name">Material Name</label>
+                <select class="form-control" id="name" name="name">
+                    <option selected disabled value = "">---Please Select---</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="id">Quantity</label>
+                <input class="form-control" id="quantity" name="quantity" placeholder = "Enter quantity">
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <div class = "row">
+              <div class = "offset-md-10 col-md-1" id = "reset_btn_div">
+                <button type="button" id = "reset_btn" class="btn btn-danger float-right" onclick="reset_form();">Reset</button>
+              </div>
+              <div class = "col-md-1" id = "create_btn_div">
+                <button type="button" id = "create_btn" class="btn btn-success float-right" onclick="add_inventory_ajax();">Submit</button>
+              </div>
+              <div style = "display:none" class = "col-md-1" id = "edit_btn_div">
+                <button type="button" id = "edit_btn" class="btn btn-primary float-right" onclick="edit_inventory_ajax();">Edit</button>
+              </div>
+              
+            </div>
+            
+          </div>
+        </div>
+        <!-- /.card -->
+        <div class="col-md-12">
+          <table style="display: none" id="table-data" class="table table-striped" width="100%">
+            <thead>
+              <th>Material Name</th>
+              <th>Material Weight</th>
+              <th>Material Category</th>
+              <th>Material Quantity</th>
+              <th>Entry Date</th>
+              <th>Operator</th>
+              <th>Action</th>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+</section>
+{% include "modals.html" %}
+
+
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+
+<script>
+
+ var inventory_id = "";
+
+  $( document ).ready(function() {
+    get_inventory_ajax();
+    get_material_values_ajax();
+  });
+
+  function get_material_values_ajax()
+  {
+    $.ajax({
+      type:'POST',
+      url: 'get_material_values_ajax',
+
+      success: function(response)
+      {
+          const data = response.data;
+
+          var html= "<option value = '' selected disabled>---Please Select---</option>";
+          
+          $('#name').html("");
+          for (var i = 0 ; i < data.length ; i++)
+          {
+            html += "<option value = '"+data[i][0]+"''> "+data[i][1]+"</option>";
+          }
+
+          $('#name').html(html);
+      }
+    });
+  }
+
+
+  function reset_form()
+  {
+    $('#name').val("");
+    $('#quantity').val("");
+
+    $("#edit_btn_div").hide();
+    $("#create_btn_div").show();
+  }
+
+
+  function add_inventory_ajax()
+  {
+    const name = $('#name').val();
+    const quantity = $('#quantity').val();
+
+    
+    if(name == '' || quantity == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+      'material_id': name,
+      'quantity': quantity,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'add_inventory_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Inventory added successfully.');
+
+            reset_form();
+
+            get_inventory_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+  function get_inventory_ajax()
+  {
+		$('#table-data').show();
+			
+		$('#table-data').dataTable({
+			destroy: true,
+			"scrollX":true,
+	    
+			"ajax":
+	    	{
+		    	"type":'POST',
+		    	"data":
+		    	{
+		      	},
+
+	      		"url":'get_inventory_ajax',
+            "lengthMenu": [[10, 25, 50,100, -1], [10, 25, 50,100, "All"]],
+	    	},
+
+	    	"dom": 'Bfrtip',
+			"buttons": [
+						'pageLength','csv', 'excel'
+			],
+
+		});
+	}
+
+
+  function edit_inventory(id, material_id, quantity)
+  {
+    $('#name').val(material_id);
+    $('#quantity').val(quantity);
+    inventory_id = id;
+
+    $("#edit_btn_div").show();
+    $("#create_btn_div").hide();
+  }
+  
+
+  function edit_inventory_ajax()
+  {
+    const name = $('#name').val();
+    const quantity = $('#quantity').val();
+
+    
+    if(name == '' || quantity == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+      'material_id': name,
+      'quantity': quantity,
+      'id':inventory_id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'edit_inventory_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Inventory updation successful.');
+
+            reset_form();
+
+            get_inventory_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+
+  function delete_inventory_ajax(id)
+  {
+    const data = {
+      'id': id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'delete_inventory_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Inventory deletion successful.');
+
+            get_inventory_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+</script>
+{% endblock body %}

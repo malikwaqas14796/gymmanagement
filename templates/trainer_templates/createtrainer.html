@@ -1,0 +1,330 @@
+
+{% extends 'header.html' %}
+
+{% block body %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
+{% block title %}
+<title>Create Trainer</title>
+{% endblock title %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <div class="card card-dark">
+        <div class="card-header">
+          <h3 class="card-title">Create Trainer</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="name">Trainer Name</label>
+              <input class="form-control" id="name" name="name" placeholder="Enter Trainer Name">
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="id">Trainer ID</label>
+                <input type="text" class="form-control" id="id" name="id" placeholder="Enter trainerid">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="phone_no">Phone No.</label>
+                <input type = "number" class="form-control" id="phone_no" name="phone_no" placeholder="Enter Phone No.">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="email_address">Email Address</label>
+                <input type = "text" class="form-control" id="email_address" name="email_address" placeholder="Enter email address">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="city">City</label>
+                <select class="form-control search-select" id="city" name="city">
+                  <option value="" selected disabled>Please select</option>
+                  <option value="Islamabad">Islamabad</option>
+                  <option value="Rawalpindi">Rawalpindi</option>
+                  <option value="Faisalabad">Faisalabad</option>
+                  <option value="Peshawar">Peshawar</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="cnic">CNIC</label>
+                <input class="form-control" id="cnic" name="cnic" placeholder="Enter CNIC">
+              </div>
+            </div>
+          </div>
+          <div class = "row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input class="form-control" id="password" name="password" placeholder="Enter Password">
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <div class = "row">
+              <div class = "offset-md-10 col-md-1" id = "reset_btn_div">
+                <button type="button" id = "reset_btn" class="btn btn-danger float-right" onclick="reset_form();">Reset</button>
+              </div>
+              <div class = "col-md-1" id = "create_btn_div">
+                <button type="button" id = "create_btn" class="btn btn-success float-right" onclick="create_trainer_ajax();">Submit</button>
+              </div>
+              <div style = "display:none" class = "col-md-1" id = "edit_btn_div">
+                <button type="button" id = "edit_btn" class="btn btn-primary float-right" onclick="edit_trainer_ajax();">Edit</button>
+              </div>
+              
+            </div>
+            
+          </div>
+        </div>
+        <!-- /.card -->
+        <div class="col-md-12">
+          <table style="display: none" id="table-data" class="table table-striped table-bordered " width="100%">
+            <thead>
+              <th>Trainer Name</th>
+              <th>Trainer ID</th>
+              <th>City</th>
+              <th>Phone Number</th>
+              <th>Email Address</th>
+              <th>Cnic</th>
+              <th>Password</th>
+              <th>Entry Date</th>
+              <th>Operator</th>
+              <th>Action</th>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+</section>
+{% include "modals.html" %}
+
+
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+
+<script>
+
+  
+
+  $( document ).ready(function() {
+    get_trainer_ajax();
+  });
+
+  function reset_form()
+  {
+    $('#name').val("");
+    $('#id').val("");
+    $('#phone_no').val("");
+    $('#email_address').val("");
+    $('#cnic').val("");
+    $('#city').val("");
+    $('#password').val("");
+
+    $("#edit_btn_div").hide();
+    $("#create_btn_div").show();
+    $('#id').attr("readonly", false);
+  }
+
+
+  function create_trainer_ajax()
+  {
+    const name = $('#name').val();
+    const id = $('#id').val();
+    const phone_no = $('#phone_no').val();
+    const email_address = $('#email_address').val();
+    const cnic = $('#cnic').val();
+    const city = $('#city').val();
+    const password = $('#password').val();
+    
+    if(name == '' || id == '' || city == '' || password == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+      'name': name,
+      'id': id,
+      'phone_no': phone_no,
+      'email_address': email_address,
+      'cnic': cnic,
+      'city': city,
+      'password': password
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'create_trainer_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer creation successful.');
+
+            reset_form();
+
+            get_trainer_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+  function get_trainer_ajax()
+  {
+		$('#table-data').show();
+			
+		$('#table-data').dataTable({
+			destroy: true,
+			"scrollX":true,
+	    
+			"ajax":
+	    	{
+		    	"type":'POST',
+		    	"data":
+		    	{
+		      	},
+
+	      		"url":'get_trainer_ajax',
+            "lengthMenu": [[10, 25, 50,100, -1], [10, 25, 50,100, "All"]],
+	    	},
+
+	    	"dom": 'Bfrtip',
+			"buttons": [
+						'pageLength','csv', 'excel'
+			],
+
+		});
+	}
+
+
+  function edit_trainer(id, name, city, phone_no, email_address, cnic, password)
+  {
+    $('#name').val(name);
+    $('#id').val(id);
+    $('#phone_no').val(phone_no);
+    $('#email_address').val(email_address);
+    $('#cnic').val(cnic);
+    $('#city').val(city);
+    $('#password').val(password);
+
+    $("#edit_btn_div").show();
+    $("#create_btn_div").hide();
+    $('#id').attr("readonly", true);
+  }
+  
+
+  function edit_trainer_ajax()
+  {
+    const name = $('#name').val();
+    const id = $('#id').val();
+    const phone_no = $('#phone_no').val();
+    const email_address = $('#email_address').val();
+    const cnic = $('#cnic').val();
+    const city = $('#city').val();
+    const password = $('#password').val();
+    
+    if(name == '' || id == '' || city == '' || password == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+      'name': name,
+      'id': id,
+      'phone_no': phone_no,
+      'email_address': email_address,
+      'cnic': cnic,
+      'city': city,
+      'password': password
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'edit_trainer_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer updation successful.');
+
+            reset_form();
+
+            get_trainer_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+
+  function delete_trainer_ajax(id)
+  {
+    const data = {
+      'id': id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'delete_trainer_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer deletion successful.');
+
+            get_trainer_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+</script>
+{% endblock body %}
