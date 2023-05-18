@@ -1,5 +1,5 @@
 from gymApp.models import *
-
+#inventory model
 class InventoryModel():
         
     def add_inventory(self, data, operator):
