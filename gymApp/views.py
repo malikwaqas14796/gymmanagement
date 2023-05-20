@@ -20,7 +20,7 @@ def login(request):
 
 
 @csrf_exempt
-# @decorator.check_login
+
 def register_user(request):
     return render(request, "register_user.html")
 
@@ -60,8 +60,9 @@ def destroy_session(request):
    
     del request.session['USERNAME']
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def dashboard(request):
     return render(request, "admin_templates/dashboard.html")
 
@@ -69,14 +70,16 @@ def dashboard(request):
 
 
 ################################## ADMIN SECTION STARTS HERE #################################
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def createadmin(request):
     return render(request, "admin_templates/createadmin.html")
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def create_admin_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -90,8 +93,9 @@ def create_admin_ajax(request):
         else:
             return HttpResponse('true')
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_admin_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -106,8 +110,9 @@ def edit_admin_ajax(request):
             return HttpResponse('true')
         
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_admin_ajax(request):
 
     dataArray = []
@@ -127,8 +132,9 @@ def get_admin_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_admin_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -152,8 +158,9 @@ def delete_admin_ajax(request):
 ################################## TRAINER SECTION STARTS HERE #################################
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def createtrainer(request):
     return render(request, "trainer_templates/createtrainer.html")
 
@@ -172,8 +179,9 @@ def create_trainer_ajax(request):
             return HttpResponse('true')
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_trainer_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -189,8 +197,9 @@ def edit_trainer_ajax(request):
         
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_trainer_ajax(request):
 
     dataArray = []
@@ -208,8 +217,9 @@ def get_trainer_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_trainer_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -235,8 +245,9 @@ def delete_trainer_ajax(request):
 ################################## MEMBER SECTION STARTS HERE #################################
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def createmember(request):
     return render(request, "member_templates/createmember.html")
 
@@ -255,8 +266,9 @@ def create_member_ajax(request):
             return HttpResponse('true')
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_member_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -271,8 +283,9 @@ def edit_member_ajax(request):
             return HttpResponse('true')
         
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_member_ajax(request):
 
     dataArray = []
@@ -290,8 +303,9 @@ def get_member_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_member_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -307,8 +321,9 @@ def delete_member_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_members_values_ajax(request):
 
     members = MemberModel.get_members()
@@ -328,21 +343,24 @@ def get_members_values_ajax(request):
 ################################## PACKAGE SECTION STARTS HERE #################################
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def createpackage(request):
     return render(request, "package_templates/createpackage.html")
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def assignpackage(request):
     return render(request, "package_templates/assignpackage.html")
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def create_package_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -357,8 +375,9 @@ def create_package_ajax(request):
             return HttpResponse('true')
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_package_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -373,8 +392,9 @@ def edit_package_ajax(request):
             return HttpResponse('true')
         
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_package_ajax(request):
 
     dataArray = []
@@ -392,8 +412,9 @@ def get_package_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_package_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -409,8 +430,9 @@ def delete_package_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_package_values_ajax(request):
 
     packages = PackageModel.get_packages()
@@ -422,8 +444,9 @@ def get_package_values_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def assign_package_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -444,22 +467,25 @@ def assign_package_ajax(request):
 ################################## MATERIAL SECTION STARTS HERE #################################
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def creatematerial(request):
     return render(request, "material_templates/creatematerial.html")
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def assignmaterial(request):
     return render(request, "material_templates/assignmaterial.html")
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def create_material_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -474,8 +500,9 @@ def create_material_ajax(request):
             return HttpResponse('true')
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_material_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -491,8 +518,9 @@ def edit_material_ajax(request):
         
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_material_ajax(request):
 
     dataArray = []
@@ -510,8 +538,9 @@ def get_material_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_material_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -526,8 +555,9 @@ def delete_material_ajax(request):
             return HttpResponse('true')
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_material_values_ajax(request):
 
     materials = MaterialModel.get_materials()
@@ -539,8 +569,9 @@ def get_material_values_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def assign_material_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -561,15 +592,17 @@ def assign_material_ajax(request):
 ################################## INVENTORY SECTION STARTS HERE #################################
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def inventory(request):
     return render(request, "inventory_templates/inventory.html")
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def add_inventory_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -585,8 +618,9 @@ def add_inventory_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def edit_inventory_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
@@ -603,8 +637,9 @@ def edit_inventory_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def get_inventory_ajax(request):
 
     dataArray = []
@@ -622,8 +657,9 @@ def get_inventory_ajax(request):
 
 
 
-@decorator.check_login
+
 @csrf_exempt
+@decorator.check_login
 def delete_inventory_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))

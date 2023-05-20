@@ -1,2 +1,2 @@
 # gymmanagement
-Gym Management system
+Gym Management system using Python Django
