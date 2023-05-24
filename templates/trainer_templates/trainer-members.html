@@ -1,0 +1,348 @@
+
+{% extends 'header.html' %}
+
+{% block body %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
+{% block title %}
+<title>Trainer Members</title>
+{% endblock title %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <div class="card card-dark">
+        <div class="card-header">
+          <h3 class="card-title">Add Members</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="trainer_id">Trainers</label>
+              <select class="form-control search-select" id="trainer_id" name="trainer_id">
+                <option value="" selected disabled>Please select</option>
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="member_id">Members</label>
+                <select class="form-control search-select" id="member_id" name="member_id">
+                  <option value="" selected disabled>Please select</option>
+                </select>
+              </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="phone_no">Packages</label>
+                <select class="form-control search-select" id="package_id" name="package_id">
+                    <option value="" selected disabled>Please select</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <div class = "row">
+              <div class = "offset-md-10 col-md-1" id = "reset_btn_div">
+                <button type="button" id = "reset_btn" class="btn btn-danger float-right" onclick="reset_form();">Reset</button>
+              </div>
+              <div class = "col-md-1" id = "create_btn_div">
+                <button type="button" id = "create_btn" class="btn btn-success float-right" onclick="create_trainer_member_ajax();">Submit</button>
+              </div>
+              <div style = "display:none" class = "col-md-1" id = "edit_btn_div">
+                <button type="button" id = "edit_btn" class="btn btn-primary float-right" onclick="edit_trainer_member_ajax();">Edit</button>
+              </div>
+              
+            </div>
+            
+          </div>
+        </div>
+        <!-- /.card -->
+        <div class="col-md-12">
+          <table style="display: none" id="table-data" class="table table-striped table-bordered " width="100%">
+            <thead>
+              <th>Trainer Name</th>
+              <th>Member Name</th>
+              <th>Package Name</th>
+              <th>Entry Date</th>
+              <th>Operator</th>
+              <th>Action</th>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+</section>
+{% include "modals.html" %}
+
+
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+
+<script>
+
+  var id = '';
+
+  $( document ).ready(function() {
+    get_trainer_members_ajax();
+    get_trainers_values_ajax();
+    get_members_values_ajax();
+    get_trainer_package_values_ajax();
+  });
+
+  function reset_form()
+  {
+    $('#trainer_id').val("");
+    $('#member_id').val("");
+    $('#package_id').val("");
+
+
+    $("#edit_btn_div").hide();
+    $("#create_btn_div").show();
+    $('#id').attr("readonly", false);
+  }
+
+
+  function create_trainer_member_ajax()
+  {
+    const trainer_id = $('#trainer_id').val();
+    const member_id = $('#member_id').val();
+    const package_id = $('#package_id').val();
+    
+    if(trainer_id == '' || member_id == '' || package_id == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+      'trainer_id': trainer_id,
+      'member_id': member_id,
+      'package_id': package_id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'create_trainer_member_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer creation successful.');
+
+            reset_form();
+
+            get_trainer_members_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+  function get_trainer_members_ajax()
+  {
+		$('#table-data').show();
+			
+		$('#table-data').dataTable({
+			destroy: true,
+			"scrollX":true,
+	    
+			"ajax":
+	    	{
+		    	"type":'POST',
+		    	"data":
+		    	{
+		      	},
+
+	      		"url":'get_trainer_members_ajax',
+            "lengthMenu": [[10, 25, 50,100, -1], [10, 25, 50,100, "All"]],
+	    	},
+
+	    	"dom": 'Bfrtip',
+			"buttons": [
+						'pageLength','csv', 'excel'
+			],
+
+		});
+	}
+
+
+  function edit_trainer_member(mapping_id, trainer_id, member_id, package_id)
+  {
+    $('#trainer_id').val(trainer_id);
+    $('#member_id').val(member_id);
+    $('#package_id').val(package_id);
+
+    id = mapping_id;
+
+    $("#edit_btn_div").show();
+    $("#create_btn_div").hide();
+    $('#id').attr("readonly", true);
+  }
+  
+
+  function edit_trainer_member_ajax()
+  {
+    const trainer_id = $('#trainer_id').val();
+    const member_id = $('#member_id').val();
+    const package_id = $('#package_id').val();
+    
+    if(trainer_id == '' || member_id == '' || package_id == '')
+    {
+      alert("Fill the required data!");
+      return
+    }
+
+
+    const data = {
+        'id': id,
+      'trainer_id': trainer_id,
+      'member_id': member_id,
+      'package_id': package_id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'edit_trainer_member_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer updation successful.');
+
+            reset_form();
+
+            get_trainer_members_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+
+  function delete_trainer_member_ajax(id)
+  {
+    const data = {
+      'id': id,
+    };
+    
+    const payload = JSON.stringify(data);
+
+    $.ajax({
+      type:'POST',
+      url: 'delete_trainer_member_ajax',
+      data : {
+        payload
+      },
+      success: function(response)
+      {
+          if(response == 'true')
+          {
+            alert('Trainer deletion successful.');
+
+            get_trainer_members_ajax();
+          }
+
+          else
+          {
+            alert(response);
+          }
+      }
+    });
+  }
+
+  function get_members_values_ajax()
+  {
+    $.ajax({
+      type:'POST',
+      url: 'get_members_values_ajax',
+
+      success: function(response)
+      {
+          const data = response.data;
+
+          var html= "<option value = '' selected disabled>---Please Select---</option>";
+          
+          $('#member_id').html("");
+          for (var i = 0 ; i < data.length ; i++)
+          {
+            html += "<option value = '"+data[i][1]+"''> "+data[i][0]+"</option>";
+          }
+
+          $('#member_id').html(html);
+      }
+    });
+  }
+
+  function get_trainers_values_ajax()
+  {
+    $.ajax({
+      type:'POST',
+      url: 'get_trainers_values_ajax',
+
+      success: function(response)
+      {
+          const data = response.data;
+
+          var html= "<option value = '' selected disabled>---Please Select---</option>";
+          
+          $('#trainer_id').html("");
+          for (var i = 0 ; i < data.length ; i++)
+          {
+            html += "<option value = '"+data[i][1]+"''> "+data[i][0]+"</option>";
+          }
+
+          $('#trainer_id').html(html);
+      }
+    });
+  }
+
+
+  function get_trainer_package_values_ajax()
+  {
+    $.ajax({
+      type:'POST',
+      url: 'get_trainer_package_values_ajax',
+
+      success: function(response)
+      {
+          const data = response.data;
+
+          var html= "<option value = '' selected disabled>---Please Select---</option>";
+          
+          $('#package_id').html("");
+          for (var i = 0 ; i < data.length ; i++)
+          {
+            html += "<option value = '"+data[i][0]+"''> "+data[i][1]+"</option>";
+          }
+
+          $('#package_id').html(html);
+      }
+    });
+  }
+</script>
+{% endblock body %}

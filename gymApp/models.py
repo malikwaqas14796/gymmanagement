@@ -40,9 +40,12 @@ class Trainers(models.Model):
     operator = models.CharField(max_length=100)
 
 
+
+
 class Members(models.Model):
     id = models.AutoField(primary_key=True)
     member_id = models.CharField(max_length=100)
+    package_id = models.ForeignKey(Packages, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
     cnic = models.IntegerField()
     phone_no = models.IntegerField()
@@ -56,7 +59,7 @@ class Members(models.Model):
 
 class TrainerPackages(models.Model):
     id = models.AutoField(primary_key=True)
-    trainer_id = models.CharField(max_length=100)
+    trainer_id = models.ForeignKey(Trainers, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
     amount = models.IntegerField()
     status = models.CharField(max_length=20)
@@ -67,6 +70,7 @@ class TrainerPackages(models.Model):
 class TrainerMembers(models.Model):
     id = models.AutoField(primary_key=True)
     member_id = models.ForeignKey(Members, on_delete=models.CASCADE, null=True)
+    trainer_id = models.ForeignKey(Trainers, on_delete=models.CASCADE, null=True)
     trainer_package_id = models.ForeignKey(TrainerPackages, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=20)
     datetime = models.DateField(auto_now=True)

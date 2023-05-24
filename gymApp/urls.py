@@ -14,6 +14,7 @@ urlpatterns = [
 
     #Trainer Views
     path('createtrainer', views.createtrainer, name = 'createtrainer'),
+    path('trainermembers', views.trainermembers, name = 'trainermembers'),
 
 
     #Member Views
@@ -54,8 +55,12 @@ urlpatterns = [
     path('get_trainer_ajax', views.get_trainer_ajax, name = 'get_trainer_ajax'),
     path('edit_trainer_ajax', views.edit_trainer_ajax, name = 'edit_trainer_ajax'),
     path('delete_trainer_ajax', views.delete_trainer_ajax, name = 'delete_trainer_ajax'),
-
-
+    path('get_trainers_values_ajax', views.get_trainers_values_ajax, name = 'get_trainers_values_ajax'),
+    path('get_trainer_members_ajax', views.get_trainer_members_ajax, name = 'get_trainer_members_ajax'),
+    path('get_trainer_package_values_ajax', views.get_trainer_package_values_ajax, name = 'get_trainer_package_values_ajax'),
+    path('create_trainer_member_ajax', views.create_trainer_member_ajax, name = 'create_trainer_member_ajax'),
+    path('edit_trainer_member_ajax', views.edit_trainer_member_ajax, name = 'edit_trainer_member_ajax'),
+    path('delete_trainer_member_ajax', views.delete_trainer_member_ajax, name = 'delete_trainer_member_ajax'),
 
 
     #member ajax calls

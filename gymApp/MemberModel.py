@@ -10,8 +10,9 @@ class MemberModel():
         if len(check_member_entry) > 0:
             return '0'
 
+        package_instance = Packages.objects.get(id = data['package'], status = 'active')
 
-        result = Members(name = data['name'],  member_id = data['id'], city = data['city'], phone_no = data['phone_no'], email_address = data['email_address'], cnic = data['cnic'], password = data['password'], status = "active", operator = operator)
+        result = Members(name = data['name'],  member_id = data['id'], city = data['city'], phone_no = data['phone_no'], email_address = data['email_address'], cnic = data['cnic'], password = data['password'], package_id = package_instance, status = "active", operator = operator)
         result.save()
         return result
     
@@ -20,7 +21,9 @@ class MemberModel():
         # EMPLOYEE.objects.filter(empid='mwaqas96').delete()
         # return 12121
         # employees = EMPLOYEE.objects.values()
-        members = Members.objects.filter(status = 'active')
+        # members = Members.objects.filter(status = 'active')
+
+        members = Members.objects.filter(status = 'active').select_related('package_id')
 
         return members
     
@@ -28,7 +31,7 @@ class MemberModel():
 
     def edit_member(self, data, operator):
 
-        result = Members.objects.filter(member_id = data['id']).update(name = data['name'],  member_id = data['id'], city = data['city'], phone_no = data['phone_no'], email_address = data['email_address'], cnic = data['cnic'], password = data['password'], operator = operator)
+        result = Members.objects.filter(member_id = data['id']).update(name = data['name'],  member_id = data['id'], city = data['city'], phone_no = data['phone_no'], email_address = data['email_address'], cnic = data['cnic'], password = data['password'], package_id = data['package'], operator = operator)
 
         return result
     

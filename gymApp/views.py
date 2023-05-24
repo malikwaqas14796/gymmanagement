@@ -85,7 +85,7 @@ def create_admin_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        admin_class_obj = AdminModel();
+        admin_class_obj = AdminModel()
         result = admin_class_obj.create_admin_ajax(data, operator)
 
         if result == '0':
@@ -101,7 +101,7 @@ def edit_admin_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        admin_class_obj = AdminModel();
+        admin_class_obj = AdminModel()
         result = admin_class_obj.edit_admin_ajax(data, operator)
 
         if result == '0':
@@ -140,7 +140,7 @@ def delete_admin_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        admin_class_obj = AdminModel();
+        admin_class_obj = AdminModel()
         result = admin_class_obj.delete_admin(data, operator)
         
         if result == '0':
@@ -165,12 +165,19 @@ def createtrainer(request):
     return render(request, "trainer_templates/createtrainer.html")
 
 @csrf_exempt
+@decorator.check_login
+def trainermembers(request):
+    return render(request, "trainer_templates/trainer-members.html")
+
+
+@csrf_exempt
+@decorator.check_login
 def create_trainer_ajax(request):
     if request.method == 'POST':
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        trainer_class_obj = TrainerModel();
+        trainer_class_obj = TrainerModel()
         result = trainer_class_obj.create_trainer(data, operator)
 
         if result == '0':
@@ -187,7 +194,7 @@ def edit_trainer_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        trainer_class_obj = TrainerModel();
+        trainer_class_obj = TrainerModel()
         result = trainer_class_obj.edit_trainer(data, operator)
 
         if result == '0':
@@ -215,6 +222,16 @@ def get_trainer_ajax(request):
     return JsonResponse({'data': dataArray})
 
 
+@csrf_exempt
+@decorator.check_login
+def get_trainers_values_ajax(request):
+
+    trainers = TrainerModel.get_trainers()
+
+    dataArray = []
+    for i in range(0, len(trainers)):
+        dataArray.append([trainers[i].trainer_id, trainers[i].id])
+    return JsonResponse({"data":dataArray})
 
 
 
@@ -225,7 +242,7 @@ def delete_trainer_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        trainer_class_obj = TrainerModel();
+        trainer_class_obj = TrainerModel()
         result = trainer_class_obj.delete_trainer(data, operator)
         
         if result == '0':
@@ -234,6 +251,81 @@ def delete_trainer_ajax(request):
             return HttpResponse('true')
 
 
+@csrf_exempt
+@decorator.check_login
+def create_trainer_member_ajax(request):
+    if request.method == 'POST':
+        data= json.loads(request.POST.get('payload'))
+        operator = request.session['USERNAME']
+
+        trainer_class_obj = TrainerModel()
+        result = trainer_class_obj.create_trainer_member(data, operator)
+
+        if result == '0':
+            return HttpResponse('Already Exists.')
+        else:
+            return HttpResponse('true')
+
+@csrf_exempt
+@decorator.check_login
+def get_trainer_package_values_ajax(request):
+
+    packages = TrainerModel.get_trainer_packages()
+
+    dataArray = []
+    for i in range(0, len(packages)):
+        dataArray.append([packages[i].id, packages[i].name])
+    return JsonResponse({"data":dataArray})
+
+
+
+@csrf_exempt
+@decorator.check_login
+def get_trainer_members_ajax(request):
+
+    dataArray = []
+    trainers = TrainerModel.get_trainer_members()
+
+    for i in range(0, len(trainers)):
+        id = trainers[i].id
+
+        dataArray.append([trainers[i].trainer_id.name, trainers[i].member_id.name,trainers[i].trainer_package_id.name,trainers[i].datetime,trainers[i].operator,
+        "<div><a onclick = 'edit_trainer_member(\""+str(id)+"\",\""+str(trainers[i].trainer_id.id)+"\",\""+str(trainers[i].member_id.id)+"\",\""+str(trainers[i].trainer_package_id.id)+"\")'; class='btn btn-sm btn-primary'><span class='badge bg-teal'></span><i class='fas fa-edit'></i></a>&nbsp;<a onclick = 'delete_trainer_member_ajax(\""+str(id)+"\")' class='btn btn-sm btn-danger'><span class='badge bg-teal'></span><i class='fas fa-trash'></i></a></div>"
+        ])
+
+    return JsonResponse({'data': dataArray})
+
+
+@csrf_exempt
+@decorator.check_login
+def edit_trainer_member_ajax(request):
+    if request.method == 'POST':
+        data= json.loads(request.POST.get('payload'))
+        operator = request.session['USERNAME']
+
+        trainer_class_obj = TrainerModel()
+        result = trainer_class_obj.edit_trainer_member(data, operator)
+
+        if result == '0':
+            return HttpResponse('Already Exists.')
+        else:
+            return HttpResponse('true')
+
+
+@csrf_exempt
+@decorator.check_login
+def delete_trainer_member_ajax(request):
+    if request.method == 'POST':
+        data= json.loads(request.POST.get('payload'))
+        operator = request.session['USERNAME']
+
+        trainer_class_obj = TrainerModel()
+        result = trainer_class_obj.delete_trainer_member(data, operator)
+        
+        if result == '0':
+            return HttpResponse('Error.')
+        else:
+            return HttpResponse('true')
 ################################## TRAINER SECTION ENDS HERE #################################
 
 
@@ -257,7 +349,7 @@ def create_member_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        member_class_obj = MemberModel();
+        member_class_obj = MemberModel()
         result = member_class_obj.create_member(data, operator)
 
         if result == '0':
@@ -274,7 +366,7 @@ def edit_member_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        member_class_obj = MemberModel();
+        member_class_obj = MemberModel()
         result = member_class_obj.edit_member(data, operator)
 
         if result == '0':
@@ -294,8 +386,8 @@ def get_member_ajax(request):
     for i in range(0, len(members)):
         member_id = members[i].member_id
 
-        dataArray.append([members[i].name, members[i].member_id,members[i].city,members[i].phone_no,members[i].email_address,members[i].cnic,members[i].password,members[i].datetime,members[i].operator,
-        "<div><a onclick = 'edit_member(\""+str(member_id)+"\",\""+str(members[i].name)+"\",\""+str(members[i].city)+"\",\""+str(members[i].phone_no)+"\",\""+str(members[i].email_address)+"\",\""+str(members[i].cnic)+"\",\""+str(members[i].password)+"\")'; class='btn btn-sm btn-primary'><span class='badge bg-teal'></span><i class='fas fa-edit'></i></a>&nbsp;<a onclick = 'delete_member_ajax(\""+str(member_id)+"\")' class='btn btn-sm btn-danger'><span class='badge bg-teal'></span><i class='fas fa-trash'></i></a></div>"
+        dataArray.append([members[i].name, members[i].member_id,members[i].city,members[i].phone_no,members[i].email_address,members[i].cnic, members[i].package_id.name, members[i].password ,members[i].datetime,members[i].operator,
+        "<div><a onclick = 'edit_member(\""+str(member_id)+"\",\""+str(members[i].name)+"\",\""+str(members[i].city)+"\",\""+str(members[i].phone_no)+"\",\""+str(members[i].email_address)+"\",\""+str(members[i].cnic)+"\",\""+str(members[i].password)+"\",\""+str(members[i].package_id.id)+"\")'; class='btn btn-sm btn-primary'><span class='badge bg-teal'></span><i class='fas fa-edit'></i></a>&nbsp;<a onclick = 'delete_member_ajax(\""+str(member_id)+"\")' class='btn btn-sm btn-danger'><span class='badge bg-teal'></span><i class='fas fa-trash'></i></a></div>"
         ])
 
     return JsonResponse({'data': dataArray})
@@ -311,7 +403,7 @@ def delete_member_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        member_class_obj = MemberModel();
+        member_class_obj = MemberModel()
         result = member_class_obj.delete_member(data, operator)
         
         if result == '0':
@@ -330,7 +422,7 @@ def get_members_values_ajax(request):
 
     dataArray = []
     for i in range(0, len(members)):
-        dataArray.append([members[i].member_id])
+        dataArray.append([members[i].member_id, members[i].id])
     return JsonResponse({"data":dataArray})
 
 ################################## MEMBER SECTION ENDS HERE #################################
@@ -366,7 +458,7 @@ def create_package_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        package_class_obj = PackageModel();
+        package_class_obj = PackageModel()
         result = package_class_obj.create_package(data, operator)
 
         if result == '0':
@@ -383,7 +475,7 @@ def edit_package_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        package_class_obj = PackageModel();
+        package_class_obj = PackageModel()
         result = package_class_obj.edit_package(data, operator)
 
         if result == '0':
@@ -420,7 +512,7 @@ def delete_package_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        package_class_obj = PackageModel();
+        package_class_obj = PackageModel()
         result = package_class_obj.delete_package(data, operator)
         
         if result == '0':
@@ -452,7 +544,7 @@ def assign_package_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        package_class_obj = PackageModel();
+        package_class_obj = PackageModel()
         result = package_class_obj.create_package(data, operator)
 
         if result == '0':
@@ -491,7 +583,7 @@ def create_material_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        material_class_obj = MaterialModel();
+        material_class_obj = MaterialModel()
         result = material_class_obj.create_material(data, operator)
 
         if result == '0':
@@ -508,7 +600,7 @@ def edit_material_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        material_class_obj = MaterialModel();
+        material_class_obj = MaterialModel()
         result = material_class_obj.edit_material(data, operator)
 
         if result == '0':
@@ -546,7 +638,7 @@ def delete_material_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        material_class_obj = MaterialModel();
+        material_class_obj = MaterialModel()
         result = material_class_obj.delete_material(data, operator)
         
         if result == '0':
@@ -577,7 +669,7 @@ def assign_material_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        material_class_obj = MaterialModel();
+        material_class_obj = MaterialModel()
         result = material_class_obj.create_material(data, operator)
 
         if result == '0':
@@ -608,7 +700,7 @@ def add_inventory_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        inventory_class_obj = InventoryModel();
+        inventory_class_obj = InventoryModel()
         result = inventory_class_obj.add_inventory(data, operator)
 
         if result == '0':
@@ -626,7 +718,7 @@ def edit_inventory_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        inventory_class_obj = InventoryModel();
+        inventory_class_obj = InventoryModel()
         result = inventory_class_obj.edit_inventory(data, operator)
 
         if result == '0':
@@ -665,7 +757,7 @@ def delete_inventory_ajax(request):
         data= json.loads(request.POST.get('payload'))
         operator = request.session['USERNAME']
 
-        inventory_class_obj = InventoryModel();
+        inventory_class_obj = InventoryModel()
         result = inventory_class_obj.delete_inventory(data, operator)
         
         if result == '0':

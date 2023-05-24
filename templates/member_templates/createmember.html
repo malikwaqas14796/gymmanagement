@@ -66,6 +66,14 @@
           <div class = "row">
             <div class="col-md-6">
               <div class="form-group">
+                <label for="package">Package</label>
+                <select class="form-control search-select" id="package" name="package">
+                  <option value="" selected disabled>---Please select---</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
                 <label for="password">Password</label>
                 <input class="form-control" id="password" name="password" placeholder="Enter Password">
               </div>
@@ -98,6 +106,7 @@
               <th>Phone Number</th>
               <th>Email Address</th>
               <th>Cnic</th>
+              <th>Package</th>
               <th>Password</th>
               <th>Entry Date</th>
               <th>Operator</th>
@@ -125,6 +134,7 @@
 
   $( document ).ready(function() {
     get_member_ajax();
+    get_package_values_ajax();
   });
 
   function reset_form()
@@ -136,6 +146,7 @@
     $('#cnic').val("");
     $('#city').val("");
     $('#password').val("");
+    $('#package').val("");
 
     $("#edit_btn_div").hide();
     $("#create_btn_div").show();
@@ -152,8 +163,9 @@
     const cnic = $('#cnic').val();
     const city = $('#city').val();
     const password = $('#password').val();
+    const package = $('#package').val();
     
-    if(name == '' || id == '' || city == '' || password == '')
+    if(name == '' || id == '' || city == '' || password == '' || phone_no == '' || email_address == '' || cnic == '' || package == '')
     {
       alert("Fill the required data!");
       return
@@ -167,7 +179,8 @@
       'email_address': email_address,
       'cnic': cnic,
       'city': city,
-      'password': password
+      'password': password,
+      'package': package
     };
     
     const payload = JSON.stringify(data);
@@ -225,7 +238,7 @@
 	}
 
 
-  function edit_member(id, name, city, phone_no, email_address, cnic, password)
+  function edit_member(id, name, city, phone_no, email_address, cnic, password, package)
   {
     $('#name').val(name);
     $('#id').val(id);
@@ -234,6 +247,8 @@
     $('#cnic').val(cnic);
     $('#city').val(city);
     $('#password').val(password);
+    $('#package').val(package);
+
 
     $("#edit_btn_div").show();
     $("#create_btn_div").hide();
@@ -250,8 +265,9 @@
     const cnic = $('#cnic').val();
     const city = $('#city').val();
     const password = $('#password').val();
+    const package = $('#package').val();
     
-    if(name == '' || id == '' || city == '' || password == '')
+    if(name == '' || id == '' || city == '' || password == '' || phone_no == '' || email_address == '' || cnic == '' || package == '')
     {
       alert("Fill the required data!");
       return
@@ -265,7 +281,8 @@
       'email_address': email_address,
       'cnic': cnic,
       'city': city,
-      'password': password
+      'password': password,
+      'package': package,
     };
     
     const payload = JSON.stringify(data);
@@ -323,6 +340,29 @@
           {
             alert(response);
           }
+      }
+    });
+  }
+
+  function get_package_values_ajax()
+  {
+    $.ajax({
+      type:'POST',
+      url: 'get_package_values_ajax',
+
+      success: function(response)
+      {
+          const data = response.data;
+
+          var html= "<option value = '' selected disabled>---Please Select---</option>";
+          
+          $('#package').html("");
+          for (var i = 0 ; i < data.length ; i++)
+          {
+            html += "<option value = '"+data[i][0]+"''> "+data[i][1]+"</option>";
+          }
+
+          $('#package').html(html);
       }
     });
   }
